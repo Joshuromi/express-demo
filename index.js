@@ -26,13 +26,31 @@ app.get("/api/courses/:id", (req, res) => {
   else res.send(course);
 });
 
+app.put("/api/courses/:id", (req, res) => {
+  const course = courses.find(
+    (course) => course.id === parseInt(req.params.id)
+  );
+  if (!course) {
+    res.status(404).send("The course with this id was not found.");
+  }
+  const schema = Joi.object({
+    name: Joi.string().min(3).max(30).required(),
+  });
+  const result = schema.validate(req.body);
+  if (result.error) {
+    res.status(400).send(result.error.message);
+    return;
+  }
+
+  course.name = req.body.name;
+  res.send(course);
+});
+
 app.post("/api/courses", (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(3).max(30).required(),
   });
-
   const result = schema.validate(req.body);
-
   if (result.error) {
     res.status(400).send(result.error.message);
     return;
@@ -42,7 +60,6 @@ app.post("/api/courses", (req, res) => {
     id: courses.length + 1,
     name: req.body.name,
   };
-
   courses.push(course);
   res.send(course);
 });
