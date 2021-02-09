@@ -3,6 +3,7 @@ const config = require("config");
 const Joi = require("joi");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const debug = require("debug")("app:statup");
 
 const app = express();
 
@@ -12,13 +13,13 @@ app.use(express.static("public"));
 app.use(helmet());
 
 // Configuration
-console.log("Application Name: " + config.get("name"));
-console.log("Mail Server: " + config.get("mail.host"));
-console.log("password: " + config.get("mail.password"));
+debug("Application Name: " + config.get("name"));
+debug("Mail Server: " + config.get("mail.host"));
+debug("password: " + config.get("mail.password"));
 
 if (app.get("env") === "development") {
   app.use(morgan("tiny"));
-  console.log("Mongan enabled...");
+  debug("Mongan enabled...");
 }
 
 const courses = [
@@ -98,4 +99,4 @@ function validateCourse(course) {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => console.log(`listening on port ${port}...`));
+app.listen(port, () => debug(`listening on port ${port}...`));
